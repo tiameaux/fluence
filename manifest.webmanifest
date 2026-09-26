@@ -1,6 +1,7 @@
 {
   "name": "Mots — rappel lexical",
   "short_name": "Mots",
+  "id": "mots-app",
   "description": "Un quart d'heure par jour de rappel de mots, avec répétition espacée.",
   "lang": "fr",
   "start_url": "./",
