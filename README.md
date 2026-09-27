@@ -1,32 +1,71 @@
 # Mots
 
-Entraînement quotidien au rappel lexical : un prompt (définition, phrase à trou, contraste ou anglicisme), « J'ai » ou « Je sèche », puis la réponse. Répétition espacée en 5 rappels (découverte, j+3-6, j+10-15, j+25-40, j+80-100).
+Une petite application web (PWA) pour entraîner le **rappel lexical** en français : retrouver activement des mots précis qu'on comprend mais qu'on n'emploie pas spontanément.
 
-## Mise en ligne sur GitHub Pages
+Un quart d'heure par jour, sur téléphone, hors ligne.
 
-1. Sur github.com, crée un dépôt **public** nommé `mots` (Pages gratuit exige un dépôt public).
-2. Dans le dépôt : **Add file → Upload files**, glisse tout le contenu de ce dossier (y compris le dossier `icons`), puis **Commit changes**.
-3. **Settings → Pages** : Source = *Deploy from a branch*, Branch = `main`, dossier `/ (root)`, **Save**.
-4. Une minute plus tard, l'appli est à `https://<ton-identifiant>.github.io/mots/`.
-5. Sur Android, ouvre cette adresse dans Chrome, menu ⋮ → **Installer l'application** (ou « Ajouter à l'écran d'accueil »).
+## Principe
 
-Après la première ouverture, l'appli fonctionne hors ligne : toute la banque de mots est dans le téléphone.
+Chaque carte est une phrase à trou. On cherche le mot, puis on appuie sur **J'ai** ou **Je sèche** : rien à taper.
 
-## Ajouter des mots
+- **Aides** : toucher le trou affiche la définition ; le bouton *Indice* révèle le mot lettre par lettre.
+- **Réponse** : mot cible, autres réponses acceptées, phrase d'exemple et définition. On touche le mot qu'on avait trouvé, ou *Autre mot ou rien*.
+- **Répétition espacée** : découverte, puis rappels à J+3-6, J+10-15, J+25-40 et J+80-100. Un mot raté revient le lendemain et redescend d'un intervalle. Une réussite obtenue avec des lettres révélées raccourcit l'intervalle suivant.
+- **Séance bornée par le temps** (15 min par défaut) : les révisions du jour, mêlées à des nouveaux mots, puis d'autres nouveaux mots s'il reste du temps.
+- Chaque mot a deux phrases à trou, utilisées en alternance d'un rappel à l'autre.
+- Un mot sans intérêt s'écarte d'un bouton ou d'un glissement vers la gauche. On peut le récupérer dans les Réglages.
 
-Les mots sont dans `words.js`. Pour un nouveau lot, remplace ce fichier sur GitHub (Upload files, même nom). La progression est indexée sur le mot lui-même, donc elle survit aux mises à jour. La nouvelle version est prise au lancement suivant de l'appli (parfois le deuxième, à cause du cache hors ligne).
+## Fichiers
 
-Format d'une entrée :
+| Fichier | Rôle |
+|---|---|
+| `index.html` | Page et styles |
+| `app.js` | Logique : séances, planification, écrans, sauvegarde |
+| `words.js` | Banque de mots |
+| `sw.js` | Service worker (fonctionnement hors ligne) |
+| `manifest.webmanifest`, `icons/` | Installation comme application |
+
+Aucune dépendance ni étape de build : ce sont des fichiers statiques.
+
+## Banque de mots
+
+Une entrée de `words.js` :
 
 ```js
-{"w":"pugnace","cat":"A","reg":"S","type":"P","prompt":"… une avocate particulièrement ___.","alts":["combative"],"ex":"Sans une négociatrice aussi pugnace, …","note":"(facultatif)"}
+{
+  "w": "aplanir", "cat": "V", "reg": "S",
+  "c": ["Le médiateur a réussi à ___ les dernières difficultés.",
+        "Il faut ___ les désaccords avant la réunion."],
+  "d": "(Figuré) Faire disparaître les difficultés, les obstacles.",
+  "alts": ["lisser", "régler"],
+  "ex": "Il faut aplanir les désaccords avant la réunion."
+}
 ```
 
-- `cat` : N nom, V verbe, A adjectif, R adverbe
-- `reg` : S soutenu usuel, F familier, E anglicisme
-- `type` : D définition, P phrase à trou (`___`), C contraste (`«mot vague»`), E anglicisme (`*mot anglais*`)
-- `exw` (facultatif) : forme exacte à surligner dans l'exemple quand le repérage automatique échoue
+| Champ | Contenu |
+|---|---|
+| `w` | Mot cible (clé de la progression : ne pas le renommer) |
+| `c` | Phrases à trou (`___`). Pour les anglicismes, le mot anglais est entre astérisques : `*smug*` |
+| `d` | Définition, facultative pour les anglicismes |
+| `alts` | Autres réponses acceptées |
+| `ex` | Phrase d'exemple de l'écran réponse ; `exw` donne la forme exacte à surligner si le repérage automatique échoue |
+| `cat` | `N` nom, `V` verbe, `A` adjectif, `R` adverbe |
+| `reg` | `S` soutenu usuel, `F` familier, `E` anglicisme |
+| `note` | Remarque facultative (faux ami, confusion fréquente…) |
+| `calib` | Mot déjà vu pendant le calibrage : introduit trois semaines après la première séance |
+
+Pour ajouter des mots, on complète le tableau et on pousse le fichier. La progression existante est conservée.
+
+## Déploiement
+
+Le site est servi par Netlify à partir de ce dépôt : chaque commit sur `main` est publié automatiquement.
+
+Après une mise à jour, l'application installée prend la nouvelle version au lancement suivant (parfois le deuxième, à cause du cache hors ligne). Si `app.js` ou `index.html` changent, incrémenter `CACHE` dans `sw.js` force le rafraîchissement.
+
+Pour tester en local : `python3 -m http.server` dans le dossier, puis ouvrir `http://localhost:8000`.
 
 ## Données
 
-La progression reste dans le stockage du navigateur du téléphone. **Réglages → Sauvegarde** permet d'exporter un fichier JSON (progression + journal de chaque réponse avec sa latence) et de le restaurer. Désinstaller l'appli ou vider les données de Chrome efface la progression : exporte régulièrement.
+Toute la progression reste dans le navigateur du téléphone (`localStorage`, clé `mots.v1`). Rien n'est envoyé nulle part.
+
+*Réglages → Sauvegarde* exporte un JSON contenant la progression et le journal de chaque réponse : date, mot, palier, résultat, latence, phrase utilisée, indices et définition consultée. Le même écran permet de restaurer une sauvegarde. Vider les données de Chrome efface la progression.

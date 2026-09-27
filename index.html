@@ -44,7 +44,7 @@
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans);-webkit-tap-highlight-color:transparent}
-#app{max-width:560px;min-height:100%;margin:0 auto;padding-inline:16px;padding-block:calc(env(safe-area-inset-top,0px) + 12px) calc(env(safe-area-inset-bottom,0px) + 20px);display:flex;flex-direction:column;gap:18px}
+#app{max-width:560px;min-height:100%;margin:0 auto;padding-inline:16px;padding-block:calc(env(safe-area-inset-top,0px) + 12px) calc(env(safe-area-inset-bottom,0px) + 72px);display:flex;flex-direction:column;gap:18px}
 h1{font-family:var(--serif);font-weight:600;font-size:2.2rem;line-height:1.1;margin:0}
 h2{font-family:var(--serif);font-weight:600;font-size:1.1rem;margin:0}
 button{font-family:var(--sans);color:inherit}
@@ -112,6 +112,28 @@ textarea{width:100%;min-height:70px;font:.85rem var(--sans);color:var(--ink);bac
 input[type=file]{font-size:.85rem;color:var(--muted);max-width:100%}
 #toast{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);max-width:528px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:.92rem;box-shadow:0 6px 20px rgba(0,0,0,.2)}
 #toast .link{color:var(--bg);text-decoration:underline;flex:none}
+
+/* séance : aides */
+button.gap{display:inline-block;min-width:3.4em;height:1em;border:0;border-bottom:2.5px solid var(--accent);background:transparent;padding:0;transform:translateY(-4px);cursor:pointer;vertical-align:baseline}
+button.gap:active{background:var(--sunk)}
+.aids{display:flex;gap:8px;flex-wrap:wrap}
+.aid{display:inline-flex;align-items:center;gap:6px;background:var(--sunk);border:1px solid var(--line);color:var(--muted);font-size:.85rem;font-weight:600;padding:7px 12px;border-radius:999px;cursor:pointer}
+.aid:disabled{opacity:.45;cursor:default}
+.reveal{font-family:var(--serif);font-size:1.05rem;line-height:1.45;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.hintbox{font-size:1.6rem;font-weight:600;letter-spacing:.04em;color:var(--amber);padding:6px 14px}
+.hintbox .dots{color:var(--muted);font-weight:400}
+.defline{margin:0;font-size:.92rem;color:var(--muted)}
+/* accueil */
+.today-card p{margin:0;color:var(--ink)}
+.today-card h2{font-size:1.25rem}
+.progress-list{display:flex;flex-direction:column;gap:6px}
+.progress-list h2{font-size:1rem;color:var(--muted);font-family:var(--sans);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.progress-list dl{margin:0;display:flex;flex-direction:column}
+.progress-list dl div{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line)}
+.progress-list dt{color:var(--ink)}
+.progress-list dt .sub{color:var(--muted);font-size:.85rem}
+.progress-list dd{margin:0;font-family:var(--serif);font-weight:600;font-size:1.2rem;font-variant-numeric:tabular-nums}
+.count{min-width:auto;white-space:nowrap}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:no-preference){.card,.words{animation:in .16s ease-out}@keyframes in{from{opacity:.3;transform:translateY(4px)}to{opacity:1;transform:none}}}
 </style>
